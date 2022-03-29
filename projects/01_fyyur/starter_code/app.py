@@ -29,6 +29,10 @@ migrate = Migrate(app, db)
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
+venue_genres = db.Table('venue_genres',
+    db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
+    db.Column('genre_id', db.Integer, db.ForeignKey('Genres.id'), primary_key=True)
+)
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
@@ -42,24 +46,21 @@ class Venue(db.Model):
     website = db.Column(db.String(500))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    seeking_talent = db.Column(Boolean, nullable=False, default=False)
-    seeking_description = db.Column(String(500))
+    seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String(500))
     shows = db.relationship('Shows', backref='show', lazy=True)
     genres = db.relationship('Genres', secondary=venue_genres,
       backref=db.backref('venues', lazy=True))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # TODO: Done. implement any missing fields, as a database migration using Flask-Migrate
 
 
 artist_genres = db.Table('artist_genres',
-    db.Column('artist_id', db.Integer, db.ForeignKey('artist.id'), primary_key=True),
-    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
+    db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
+    db.Column('genre_id', db.Integer, db.ForeignKey('Genres.id'), primary_key=True)
 )
 
-venue_genres = db.Table('venue_genres',
-    db.Column('venue_id', db.Integer, db.ForeignKey('venue.id'), primary_key=True),
-    db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
-)
+
 
 
 class Artist(db.Model):
@@ -77,6 +78,7 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String(500))
     genres = db.relationship('Genres', secondary=artist_genres,
       backref=db.backref('artists', lazy=True))
+    shows = db.relationship('Shows', backref='artist-show', lazy=True)
 
 class Genres(db.Model):
     __tablename__ = 'Genres'
@@ -87,16 +89,18 @@ class Genres(db.Model):
 
 class Shows(db.Model):
     __tablename__ = 'Shows'
-     id = db.Column(db.Integer, primary_key=True)
-     start_time = db.Column(db.DateTime, nullable=False)
-     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.DateTime, nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=True)
+    #change nullable to False
 
 # RELATIONSHIPS
 
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+# TODO: Done. implement any missing fields, as a database migration using Flask-Migrate
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# TODO Done.  Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 
 #----------------------------------------------------------------------------#
